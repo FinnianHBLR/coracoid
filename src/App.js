@@ -129,8 +129,8 @@ function ChatMessage(props){
       <div className='chat-container'>
         <p className='chat-container-content'>{text}</p>
       </div>
-      <button>Like</button>
-        <h3>Numper of likes: 0</h3>
+      <button className='chatLikeBtn'>Like</button>
+        <p className='chatNumberLike'>Numper of likes: 0</p>
     </div>
   )
   

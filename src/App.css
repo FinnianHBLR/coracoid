@@ -169,9 +169,10 @@ ul, li {
 .chat-container-content-auth{
   /* How to displaty content */
   width: fit-content;
-  padding-inline: 50px;
+  padding-inline: 20px;
   display: inline;
-
+  font-weight: 900;
+  color: rgb(167, 166, 166);
   position: relative;
   top: -15px;
 }
@@ -183,13 +184,20 @@ ul, li {
 
 
 .send {
-  flex-direction: row-reverse;
+  background: #0b93f6;
+  border-radius: 25px;
 }
 
-.send p {
-  color: white;
-  background: #0b93f6;
-  align-self: flex-end;
+.send .chat-container-content {
+  background: #37343490;
+  color: rgb(255, 255, 255);
+  border-radius: 10px;
+  width: 95%;
+  padding-top: 10px;
+  padding-left: 30px;
+  padding-bottom: 40px;
+  text-align: left;
+  margin: 0 auto;
 }
 
 .received {
@@ -208,7 +216,15 @@ ul, li {
   text-align: left;
   margin: 0 auto;
 }
+.chatLikeBtn {
+  margin-left: 20px;
+  border-radius: 5px;
+}
 
+.chatNumberLike {
+  margin-left: 20px;
+  border-radius: 5px;
+}
 
 .messageUserImg {
   width: 40px;
