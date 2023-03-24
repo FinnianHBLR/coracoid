@@ -45,7 +45,7 @@ function UserInfo(){
   // Check if user is valid before returning.
   return auth.currentUser && (
     <div className='bio-container'>
-      <img src={auth.currentUser.photoURL}></img>
+      <img className='bioImg' src={auth.currentUser.photoURL}></img>
       <p className='bioInfo'>Hello {auth.currentUser.displayName}!</p>
       <p className='bioInfo'>Email: {auth.currentUser.email}</p>
       <p className='bioInfo'>Ph: {auth.currentUser.phoneNumber}</p>
@@ -124,11 +124,13 @@ function ChatMessage(props){
 
   return (
     <div className={`message ${messageClass}`}>
-      <img src={photoURL}/>
+      <img className='messageUserImg' src={photoURL}/>
+      <p className='chat-container-content-auth'>{displayName}</p>
       <div className='chat-container'>
         <p className='chat-container-content'>{text}</p>
-        <p className='chat-container-content-auth'>{displayName}</p>
       </div>
+      <button>Like</button>
+        <h3>Numper of likes: 0</h3>
     </div>
   )
   

@@ -150,17 +150,16 @@ ul, li {
 }
 
 .chat-container{
+  width: 100%;
+  text-align: center;
 
-  max-width: 400px;
   margin-bottom: 12px;
   /* Spacing above. */
   margin-top: 20px;
-
-  padding: 80px 40%;
   border-radius: 10px;
-  position: relative;
-  color: white;
 
+  color: white;
+  text-align: center;
 }
 
 .chat-container-content{
@@ -169,32 +168,56 @@ ul, li {
 
 .chat-container-content-auth{
   /* How to displaty content */
+  width: fit-content;
+  padding-inline: 50px;
+  display: inline;
 
+  position: relative;
+  top: -15px;
 }
 
 .message {
-  display: flex;
+  /* Place image in message container */
   align-items: center;
-  
 }
 
 
-.sent {
+.send {
   flex-direction: row-reverse;
 }
 
-.sent p {
+.send p {
   color: white;
   background: #0b93f6;
   align-self: flex-end;
 }
-.received p {
-  background: #e5e5ea;
-  color: black;
-  text-align: center;
+
+.received {
+  background-color: rgba(228, 15, 15, 0.311);
+  border-radius: 25px;
 }
 
-img {
+.received .chat-container-content {
+  background: #37343490;
+  color: rgb(255, 255, 255);
+  border-radius: 10px;
+  width: 95%;
+  padding-top: 10px;
+  padding-left: 30px;
+  padding-bottom: 40px;
+  text-align: left;
+  margin: 0 auto;
+}
+
+
+.messageUserImg {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 2px 5px;
+}
+
+.bioImg {
   width: 40px;
   height: 40px;
   border-radius: 50%;
