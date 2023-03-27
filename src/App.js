@@ -9,6 +9,9 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import fireNaseAuthConfig from './fiebaseAuth.json';
 
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
+
 firebase.initializeApp(fireNaseAuthConfig);
 
 //Global variables
@@ -27,18 +30,88 @@ function App() {
     <div className='side-container'>
     <UserInfo/>
     <SignOut/>
-      {user ? <null></null> : <SignIn/>}
+    {user ? <PopUpNewFeather/>: <null></null>}
+    {user ? <null></null> : <SignIn/>}
+    
     </div>
     <div className='core-container'>
-      <div>
-     
-      </div>
     <section>
-      {user ? <ChatRoom/>: <null></null>}
+      {user ? <GlobalFeed/>: <null></null>}
     </section>
-    </div>
+    </div>    
   </div>
   );
+}
+
+function PopUpNewFeather() {
+  return (
+<Popup
+    trigger={<button className="button"> New Feather </button>} modal nested>
+    {close => (
+      <div className="modal">
+        <button className="close" onClick={close}>
+          &times;
+        </button>
+        <div className="header"> Modal Title </div>
+        <div className="content">
+          {' '}
+          What would you like to say?
+          <PopBoxInfo></PopBoxInfo>
+        </div>
+        
+        <div className="actions">
+          <button
+            className="button"
+            onClick={() => {
+              console.log('modal closed ');
+              close();
+            }}
+          >
+            Close Feather
+          </button>
+        </div>
+
+      </div>
+    )}
+  </Popup>
+  )
+}
+
+function PopBoxInfo() {
+  // Access the messages on Firebase.
+  const messagesRef = firestore.collection('messages');
+  // Form for data upload
+  const [formValue, setFormValue] = useState('');
+  // Set uid, photoURL and display name to be used to send a message.
+  const {uid, photoURL, displayName} = auth.currentUser
+
+  // Send Feather method
+  const sendFeather = async(e) =>{
+    // Prevent reload on message send. Send Feather sends the message.
+    e.preventDefault();
+
+    // When a message is created add user info and message text.
+    await messagesRef.add({
+      text: formValue,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      uid,
+      photoURL,
+      displayName
+    })
+    setFormValue('');
+
+    window.scrollTo(0, 0);
+  }
+
+  // For definition of form
+  return (
+    <div>
+    <form onSubmit={sendFeather}>
+      <input value={formValue} onChange={(e) => setFormValue(e.target.value)}/>
+      <button type='submit'>Create a new Feather</button>
+    </form>
+    </div>
+  )
 }
 
 function UserInfo(){
@@ -71,53 +144,32 @@ function SignIn(){
 function SignOut(){
   // Check is user state object is able to be accessed, if so then add a sign out btn.
   return auth.currentUser && (
-    <button onClick={() => auth.signOut()}>Sign Out</button>
+    <div className='signOutBtnContainer'> 
+    <button className="signOutBtn" onClick={() => auth.signOut()}>Sign Out</button>
+    </div>
   )
 }
 
-function ChatRoom (){
+function GlobalFeed (){
   const dummy = useRef();
   // Access the messages on Firebase.
   const messagesRef = firestore.collection('messages');
-  // Oreder messages by timestamp
-  const query = messagesRef.orderBy('createdAt').limit(25);
+  // Oreder messages by timestamp in a descending order
+  const query = messagesRef.orderBy('createdAt', 'desc').limit(100);
   const [messages] = useCollectionData(query, {idField: 'id'})
-  // Form for data upload
-  const [formValue, setFormValue] = useState('');
-  // Set uid, photoURL and display name to be used to send a message.
-  const {uid, photoURL, displayName} = auth.currentUser
-
-  const sendMessage = async(e) =>{
-    // Prevent reload on message send.
-    e.preventDefault();
-
-    // When a message is created add user info and message text.
-    await messagesRef.add({
-      text: formValue,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      uid,
-      photoURL,
-      displayName
-    })
-    setFormValue('');
-    dummy.current.scrollIntoView({ behavior: 'smooth' });
-  }
 
   return (
     <main>
     <div>
-      {messages && messages.map(msg => <ChatMessage key={msg.id} messages={msg}/>)}
+      {messages && messages.map(msg => <Feather key={msg.id} messages={msg}/>)}
       <div ref={dummy}></div>
     </div>
-    <form onSubmit={sendMessage}>
-      <input value={formValue} onChange={(e) => setFormValue(e.target.value)}/>
-      <button type='submit'>Send message</button>
-    </form>
     </main>
   )
 }
 
-function ChatMessage(props){
+function Feather(props){
+  // A feather is a message box.
   const {text, uid, photoURL, displayName} = props.messages;
   // Checks if the current user is sending the message, change CSS class if that is true.
   const messageClass = uid === auth.currentUser.uid ? 'send' : 'received';
