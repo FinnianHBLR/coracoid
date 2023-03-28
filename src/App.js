@@ -222,7 +222,8 @@ function Post(props){
     <div className={`post ${postClass}`}>
       {/* Post info */}
       <img alt="User profile" className='postUserImg' src={photoURL}/>
-      <p className='postContainerContentAuth'>{`\@${displayName}`}</p>
+      {/* If postClass == true , it means the message was received annd you're not the Author. Add 'you' otherwise */}
+      <p className='postContainerContentAuth'>{(postClass == 'received') ?`\@${displayName}` : `\@${displayName} (You)`}</p>
       <div className='postContainer'>
         <p className='postContainerContent'>{text}</p>
       </div>
