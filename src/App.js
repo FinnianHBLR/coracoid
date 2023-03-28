@@ -135,7 +135,7 @@ function UserInfo(){
   return auth.currentUser && (
     <div className='bioContainer'>
       <img alt="User profile" className='bioImg' src={auth.currentUser.photoURL}></img>
-      <p className='bioInfo'>Hello {auth.currentUser.displayName}!</p>
+      <p className='bioInfo'>Hello @{auth.currentUser.displayName}!</p>
       <p className='bioInfo'>Email: {auth.currentUser.email}</p>
     </div>
   )
@@ -223,7 +223,7 @@ function Post(props){
       {/* Post info */}
       <img alt="User profile" className='postUserImg' src={photoURL}/>
       {/* If postClass == true , it means the message was received annd you're not the Author. Add 'you' otherwise */}
-      <p className='postContainerContentAuth'>{(postClass == 'received') ?`\@${displayName}` : `\@${displayName} (You)`}</p>
+      <p className='postContainerContentAuth'>{(postClass === 'received') ?`@${displayName}` : `@${displayName} (You)`}</p>
       <div className='postContainer'>
         <p className='postContainerContent'>{text}</p>
       </div>
