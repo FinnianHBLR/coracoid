@@ -19,5 +19,6 @@ It is a social media platform I have developed in React.
 * Multiple feeds
 * Create new feeds
 * Migration to Next.js
+* Threads
 
 ![Image of working coracoid](https://i.imgur.com/Y3wdzzD.png)

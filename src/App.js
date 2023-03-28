@@ -1,7 +1,7 @@
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react';
 import './App.css';
 
-import firebase from 'firebase/compat/app'; 
+import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth';
 
@@ -23,71 +23,79 @@ function App() {
   const [user] = useAuthState(auth);
   return (
     <div className='App'>
-    <header>
-      <h1>Coracoid ://</h1>
-      <p className='feedTitle'>Global Feed</p>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand"></link>
-    </header>
-    <div className='sideContainer'>
-    <UserInfo/>
-    {user ? <PopUpNewPost/>: <null></null>}
-    <SignOut/>
-    {user ? <null></null> : <SignIn/>}
-    
+      <header>
+        <h1>Coracoid ://</h1>
+        <p className='feedTitle'>Global Feed</p>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand"></link>
+      </header>
+      <div className='sideContainer'>
+        <UserInfo />
+        {user ? <PopUpNewPost /> : <null></null>}
+        <SignOut />
+        {user ? <null></null> : <SignIn />}
+
+      </div>
+      <div className='coreContainer'>
+        <section>
+          {user ? <GlobalFeed /> : <null></null>}
+        </section>
+      </div>
     </div>
-    <div className='coreContainer'>
-    <section>
-      {user ? <GlobalFeed/>: <null></null>}
-    </section>
-    </div>    
-  </div>
   );
 }
 
 function PopUpNewPost() {
-  return (
-<Popup
-    trigger={<div className='newPostBtnContainer'><button className="newPostBtn"> New Post </button></div>} modal nested>
-    {close => (
-      <div className="modal">
-        <button className="close" onClick={close}>
-          &times;
-        </button>
-        <div className="header"> Create a new post </div>
-        <div className="content">
-          {' '}
-          <p>What would you like to say?</p>
-          <PopBoxInfo></PopBoxInfo>
-        </div>
-        
-        <div className="actions">
-          <button
-            className="cancelPostBtn"
-            onClick={() => {
-              console.log('modal closed ');
-              close();
-            }}
-          >
-            Cancel Post
-          </button>
-        </div>
+  const [open, setOpen] = useState(false);
+  const closeModal = () => setOpen(false);
 
-      </div>
-    )}
-  </Popup>
+  return (
+    <div className='newPostBtnContainer'>
+      <button type="button" className="newPostBtn" onClick={() => setOpen(o => !o)}>
+        Create a new post
+      </button>
+
+      <Popup open={open} closeOnDocumentClick onClose={closeModal} >
+        {close => (
+          <div className="modal">
+            <button className="close" onClick={closeModal}>
+              &times;
+            </button>
+            <div className="header"> Create a new post </div>
+            <div className="content">
+              {' '}
+              <p>What would you like to say?</p>
+              {/* Pass in method so children can access the state change method. */}
+              <PopBoxInfo closePopUpMethod={closeModal}></PopBoxInfo>
+            </div>
+
+            <div className="actions">
+              <button
+                className="cancelPostBtn"
+                onClick={() => {
+                  close();
+                }}
+              >
+                Cancel Post
+              </button>
+            </div>
+
+          </div>
+        )}
+      </Popup>
+    </div>
   )
 }
 
-function PopBoxInfo() {
-  // Access the post on Firebase.
+function PopBoxInfo(props) {
+  // Access the post on Firebase. Pass in props to access the method to close the popupbox.
   const postRef = firestore.collection('posts');
   // Form for data upload
   const [formValue, setFormValue] = useState('');
   // Set uid, photoURL and display name to be used to send a post.
-  const {uid, photoURL, displayName} = auth.currentUser
+  const { uid, photoURL, displayName } = auth.currentUser
   const likes = 0;
   // Send Post method
-  const sendPost = async(event) =>{
+  const sendPost = async (event) => {
     // Prevent reload on post send. Send Post sends the post.
     event.preventDefault();
 
@@ -104,7 +112,7 @@ function PopBoxInfo() {
       customID: '',
     }).then((createdRef) => {
       // DEBUG: console.log(value.id);
-      
+
       // Get ID of object and set it to customID so it can be used to locate to be edited.
       createdRef.update({
         customID: createdRef.id
@@ -121,16 +129,16 @@ function PopBoxInfo() {
   // For definition of form
   return (
     <div>
-    <form onSubmit={sendPost}>
-      {/*formValue is used in postRef.add ^ */}
-      <textarea className='inputField' placeholder="Enter text..." value={formValue} onChange={(event) => setFormValue(event.target.value)}/>  
-        <button className='postSendBtn' type='submit'>Create a new Post</button>
-    </form>
+      <form onSubmit={sendPost}>
+        {/*formValue is used in postRef.add ^ */}
+        <textarea className='inputField' placeholder="Enter text..." value={formValue} onChange={(event) => setFormValue(event.target.value)} />
+        <button onClick={props.closePopUpMethod} className='postSendBtn' type='submit'>Create a new Post</button>
+      </form>
     </div>
   )
 }
 
-function UserInfo(){
+function UserInfo() {
   // Check if user is valid before returning.
   return auth.currentUser && (
     <div className='bioContainer'>
@@ -142,53 +150,53 @@ function UserInfo(){
 
 }
 
-function SignIn(){
-  const signInWithGoogle = () =>{
+function SignIn() {
+  const signInWithGoogle = () => {
     // Add the google firebase provider.
     const provider = new firebase.auth.GoogleAuthProvider();
     // Use pop up
     auth.signInWithPopup(provider);
   }
-    return (
+  return (
     <>
       <button className='signInBtn' onClick={signInWithGoogle}>Sign in with Google</button>
     </>
   )
 }
 
-function SignOut(){
+function SignOut() {
   // Check is user state object is able to be accessed, if so then add a sign out btn.
   return auth.currentUser && (
-    <div className='signOutBtnContainer'> 
-    <button className="signOutBtn" onClick={() => auth.signOut()}>Sign Out</button>
+    <div className='signOutBtnContainer'>
+      <button className="signOutBtn" onClick={() => auth.signOut()}>Sign Out</button>
     </div>
   )
 }
 
-function GlobalFeed (){
+function GlobalFeed() {
   const dummy = useRef();
   // Access the posts on Firebase.
   const postRef = firestore.collection('posts');
-    // Order posts by timestamp in a descending order
+  // Order posts by timestamp in a descending order
   const query = postRef.orderBy('createdAt', 'desc').limit(100);
 
-  const options = {idField: 'id'}; // Add this line to specify the idField
+  const options = { idField: 'id' }; // Add this line to specify the idField
   const [posts] = useCollectionData(query, options);
 
   return (
     <main>
-    <div>
-      {posts && posts.map(post => <Post key={post.id} post={post} />)}
-      <div ref={dummy}></div>
-    </div>
+      <div>
+        {posts && posts.map(post => <Post key={post.id} post={post} />)}
+        <div ref={dummy}></div>
+      </div>
     </main>
   )
 }
 
 
-function Post(props){
+function Post(props) {
   // Post info from global feed.
-  const {text, uid, photoURL, displayName, likes, customID, likedBy, likedByName} = props.post;
+  const { text, uid, photoURL, displayName, likes, customID, likedBy, likedByName } = props.post;
   // Checks if the current user is sending the post, change CSS class if that is true.
   // If it's sent from the current user
   const postClass = uid === auth.currentUser.uid ? 'send' : 'received';
@@ -198,32 +206,32 @@ function Post(props){
   // Firebnase collection to get post so they can be updated.
   const postRef = firebase.firestore().collection('posts');
 
-  const likePost = async(event) => {
+  const likePost = async (event) => {
     // Get post object by ID.
     const docRef = postRef.doc(customID);
-    
-    if(likedByBool){
-        // If user has already liked post they cannot add to it.
-      } else {
-        // User has not liked post and is now liking it.
+
+    if (likedByBool) {
+      // If user has already liked post they cannot add to it.
+    } else {
+      // User has not liked post and is now liking it.
       const addedUIDList = likedBy.concat(auth.currentUser.uid);
       const addedNameList = likedByName.concat(auth.currentUser.displayName);
       // Use information to update object
       await docRef.update({
-        likes: likes+1,
+        likes: likes + 1,
         likedBy: addedUIDList,
         likedByName: addedNameList
       });
     }
   }
-  
+
   return (
-    
+
     <div className={`post ${postClass}`}>
       {/* Post info */}
-      <img alt="User profile" className='postUserImg' src={photoURL}/>
+      <img alt="User profile" className='postUserImg' src={photoURL} />
       {/* If postClass == true , it means the message was received annd you're not the Author. Add 'you' otherwise */}
-      <p className='postContainerContentAuth'>{(postClass === 'received') ?`@${displayName}` : `@${displayName} (You)`}</p>
+      <p className='postContainerContentAuth'>{(postClass === 'received') ? `@${displayName}` : `@${displayName} (You)`}</p>
       <div className='postContainer'>
         <p className='postContainerContent'>{text}</p>
       </div>
@@ -231,16 +239,16 @@ function Post(props){
       <button onClick={likePost} className={`postLikeBtn ${likedByBool ? 'disabled' : ''}`}>Like</button>
       {/* If user has liked the post, message is displayed, otherwise it is null */}
       {likedByBool ? <p className='alreadyLiked'>{'You liked this post!'}</p> : <null></null>}
-        <p className='postNumberLike'>Numper of likes: {likes}</p>
-        {/* List of people who have liked each post using a map */}
-        <div className='likedByNameContainer'>
-          <p className='likedByNames'>Liked By:</p>
-            {likedByName && likedByName.map(userName => <p className='likedByNames'>{` ${userName}`}</p>)}
+      <p className='postNumberLike'>Numper of likes: {likes}</p>
+      {/* List of people who have liked each post using a map */}
+      <div className='likedByNameContainer'>
+        <p className='likedByNames'>Liked By:</p>
+        {likedByName && likedByName.map(userName => <p className='likedByNames'>{` ${userName}`}</p>)}
         <p className='likedByNames'>...</p>
-        </div>
+      </div>
     </div>
   )
-  
+
 }
 
 export default App;
