@@ -134,7 +134,7 @@ function UserInfo(){
   // Check if user is valid before returning.
   return auth.currentUser && (
     <div className='bioContainer'>
-      <img className='bioImg' src={auth.currentUser.photoURL}></img>
+      <img alt="User profile" className='bioImg' src={auth.currentUser.photoURL}></img>
       <p className='bioInfo'>Hello {auth.currentUser.displayName}!</p>
       <p className='bioInfo'>Email: {auth.currentUser.email}</p>
     </div>
@@ -221,8 +221,8 @@ function Post(props){
     
     <div className={`post ${postClass}`}>
       {/* Post info */}
-      <img className='postUserImg' src={photoURL}/>
-      <p className='postContainerContentAuth'>{displayName}</p>
+      <img alt="User profile" className='postUserImg' src={photoURL}/>
+      <p className='postContainerContentAuth'>{`\@${displayName}`}</p>
       <div className='postContainer'>
         <p className='postContainerContent'>{text}</p>
       </div>

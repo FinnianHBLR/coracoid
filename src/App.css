@@ -278,6 +278,7 @@ ul, li {
 .post {
   /* Place image in message container */
   align-items: center;
+  margin-bottom: 50px;
 }
 
 
