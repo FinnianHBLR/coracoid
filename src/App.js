@@ -12,11 +12,15 @@ import fireNaseAuthConfig from './fiebaseAuth.json';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 
+// UUID for new replies where UDs are not generated from Firebase.
+import { v4 as uuidv4 } from 'uuid';
+
 firebase.initializeApp(fireNaseAuthConfig);
 
 //Global variables
 const auth = firebase.auth();
 const firestore = firebase.firestore();
+//TODO: Global state for current channel
 
 function App() {
   // Access user state, see if it is able to be used in user ?:
@@ -110,6 +114,7 @@ function PopBoxInfo(props) {
       likedBy: [],
       likedByName: [],
       customID: '',
+      thread: []
     }).then((createdRef) => {
       // DEBUG: console.log(value.id);
 
@@ -147,7 +152,6 @@ function UserInfo() {
       <p className='bioInfo'>Email: {auth.currentUser.email}</p>
     </div>
   )
-
 }
 
 function SignIn() {
@@ -196,7 +200,7 @@ function GlobalFeed() {
 
 function Post(props) {
   // Post info from global feed.
-  const { text, uid, photoURL, displayName, likes, customID, likedBy, likedByName } = props.post;
+  const { text, uid, photoURL, displayName, likes, customID, likedBy, likedByName, thread } = props.post;
   // Checks if the current user is sending the post, change CSS class if that is true.
   // If it's sent from the current user
   const postClass = uid === auth.currentUser.uid ? 'send' : 'received';
@@ -205,6 +209,7 @@ function Post(props) {
 
   // Firebnase collection to get post so they can be updated.
   const postRef = firebase.firestore().collection('posts');
+
 
   const likePost = async (event) => {
     // Get post object by ID.
@@ -225,30 +230,87 @@ function Post(props) {
     }
   }
 
-  return (
+  const [replyValue, setReplyValue] = useState('');
 
-    <div className={`post ${postClass}`}>
-      {/* Post info */}
-      <img alt="User profile" className='postUserImg' src={photoURL} />
-      {/* If postClass == true , it means the message was received annd you're not the Author. Add 'you' otherwise */}
-      <p className='postContainerContentAuth'>{(postClass === 'received') ? `@${displayName}` : `@${displayName} (You)`}</p>
-      <div className='postContainer'>
-        <p className='postContainerContent'>{text}</p>
+  const sendReply = async (event) => {
+    // Prevent reload on post send. Send Post sends the post.
+    event.preventDefault();
+    // Get current post by ID
+    const docRef = postRef.doc(customID);
+
+    if (replyValue === '') {
+      // No message
+    } else {
+      // Add reply message to start of array with unshift.
+      // Get new ID for reply message
+      // Get user info
+      thread.unshift({
+        id: uuidv4(),
+        text: replyValue,
+        uid: auth.currentUser.uid,
+        displayName: auth.currentUser.displayName,
+        photoURL: auth.currentUser.photoURL
+      }
+      )
+      // Update old thread with modified thread.
+      await docRef.update({
+        thread: thread
+      });
+      // Reset state of textarea to ''.
+      setReplyValue('');
+    }
+  }
+
+  return (
+    <div key={props.key}>
+      <div className={`post ${postClass}`}>
+        {/* Post info */}
+        <img alt="User profile" className='postUserImg' src={photoURL} />
+        {/* If postClass == true , it means the message was received annd you're not the Author. Add 'you' otherwise */}
+        <p className='postContainerContentAuth'>{(postClass === 'received') ? `@${displayName}` : `@${displayName} (You)`}</p>
+        <div className='postContainer'>
+          <p className='postContainerContent'>{text}</p>
+        </div>
+        {/* if like btn is pressed, use likePost to update db */}
+        <button onClick={likePost} className={`postLikeBtn ${likedByBool ? 'disabled' : ''}`}>Like</button>
+        {/* If user has liked the post, message is displayed, otherwise it is null */}
+        {likedByBool ? <p className='alreadyLiked'>{'You liked this post!'}</p> : <null></null>}
+        <p className='postNumberLike'>Numper of likes: {likes}</p>
+        {/* List of people who have liked each post using a map */}
+        <div className='likedByNameContainer'>
+          <p className='likedByNames'>Liked By:</p>
+          {likedByName && likedByName.map(userName => <p className='likedByNames'>{` ${userName}`}</p>)}
+          <p className='likedByNames'>...</p>
+        </div>
+
+        {/* Add textarea to create a reply that is linked with the replyValue state */}
+        <div>
+          <form onSubmit={sendReply}>
+            <div>
+            <textarea className='replyTextArea' placeholder="Reply..." value={replyValue} onChange={(event) => setReplyValue(event.target.value)} />
+            <button className='replySubmitBtn' type='submit'>Reply</button>
+          </div>
+          </form>
+        </div>
       </div>
-      {/* if like btn is pressed, use likePost to update db */}
-      <button onClick={likePost} className={`postLikeBtn ${likedByBool ? 'disabled' : ''}`}>Like</button>
-      {/* If user has liked the post, message is displayed, otherwise it is null */}
-      {likedByBool ? <p className='alreadyLiked'>{'You liked this post!'}</p> : <null></null>}
-      <p className='postNumberLike'>Numper of likes: {likes}</p>
-      {/* List of people who have liked each post using a map */}
-      <div className='likedByNameContainer'>
-        <p className='likedByNames'>Liked By:</p>
-        {likedByName && likedByName.map(userName => <p className='likedByNames'>{` ${userName}`}</p>)}
-        <p className='likedByNames'>...</p>
-      </div>
+
+      {/* Map replies from message under post container */}
+      {thread && thread.map(replyMessage =>
+        <div className='repliesMsgContainer'>
+          <div key={replyMessage.id} className='replyMsgContainer'>
+            <div>
+              <img className='replyMsgImg' src={replyMessage.photoURL} />
+              {/* If you posted the message and it has your uid attached to it, you posted it. */}
+              <p className='replyUserName'>{(replyMessage.uid === auth.currentUser.uid) ? `@${replyMessage.displayName} (You)` : `@${replyMessage.displayName}`}</p>
+            </div>
+            <p className='replyText'>{replyMessage.text}</p>
+          </div>
+        </div>
+      )
+      }
     </div>
   )
-
 }
+
 
 export default App;

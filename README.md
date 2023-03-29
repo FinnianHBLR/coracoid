@@ -14,11 +14,13 @@ It is a social media platform I have developed in React.
     * (You can only like a post once)
 * List of users who liked a post
 * User name display on post
+* Threads
+
 
 > Todo:
 * Multiple feeds
 * Create new feeds
 * Migration to Next.js
-* Threads
+* Thread replies and likes
 
 ![Image of working coracoid](https://i.imgur.com/Y3wdzzD.png)
