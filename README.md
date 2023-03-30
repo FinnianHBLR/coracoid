@@ -23,4 +23,15 @@ It is a social media platform I have developed in React.
 * Migration to Next.js
 * Thread replies and likes
 
-![Image of working coracoid](https://i.imgur.com/Y3wdzzD.png)
+
+> Sign in
+![Image of working coracoid](https://i.imgur.com/vN281dY.png) 
+
+> Create post
+![Image of working coracoid](https://i.imgur.com/erYs9ck.png)  
+
+> Multiple posts and likes
+![Image of working coracoid](https://i.imgur.com/Ar6XUPN.png)  
+
+> Reply to post
+![Image of working coracoid](https://i.imgur.com/P6O7Kpz.png)  
