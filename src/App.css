@@ -15,7 +15,13 @@ body {
   margin-bottom: 20px;
   font-size: 20px;
   color: white;
+  border-radius: 10px;
+  font-family: "Quicksand";
+}
 
+.replyTextArea:focus {
+  outline: none !important;
+  box-shadow: 0 0 10px #719ECE;
 }
 
 .replyTextArea::placeholder {
@@ -34,10 +40,19 @@ body {
   margin-inline: 15px;
   position: relative;
   font-size: 15px;
-  background-color: rgba(119, 27, 27, 0.8);
+  background-color: rgba(119, 27, 27, 0.974);
   color: white;
   font-family: "Quicksand";
+  border-radius: 10px;
+  cursor: pointer;
 }
+
+.replySubmitBtn:hover{
+  background-color: rgb(169, 36, 36);
+  font-weight: 700;
+}
+
+
 .repliesMsgContainer {
   background-color: rgba(111, 26, 26, 0.375);
   padding: 10px 20px;
@@ -201,12 +216,16 @@ main::-webkit-scrollbar-thumb {
   width: 70%;
   font-size:20pt;
   height: 5em;
-  box-shadow: 5px 10px #888888;
   border-style: none;
   background-color: #282c34;
   color: white;
   font-family: 'Quicksand';
   font-weight: bolder;
+}
+
+.inputField:focus {
+  outline: none !important;
+  box-shadow: 0 0 10px #719ECE;
 }
 
 .newPostBtnContainer{
